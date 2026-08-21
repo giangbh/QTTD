@@ -1,0 +1,14 @@
+{
+  "name": "qttd-mvp-local",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MVP quản trị tín dụng tập trung, nhập liệu thủ công và lưu SQLite local",
+  "scripts": {
+    "start": "node server.js",
+    "seed": "node scripts/seed.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=22.5"
+  }
+}

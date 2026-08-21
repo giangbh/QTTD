@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>QTTD Tập trung — MVP local</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="mark">QT</span>
+      <div>
+        <b>QTTD Tập trung</b>
+        <small>Hệ thống Quản trị Tín dụng · SQLite local</small>
+      </div>
+    </div>
+    <div class="top-actions">
+      <span class="source">Nguồn: <b>MANUAL</b></span>
+      <button class="btn light" id="homeBtn">Danh sách hồ sơ</button>
+      <button class="btn primary" id="newBtn">+ Hồ sơ mới</button>
+
+      <!-- User Profile Widget -->
+      <div id="userProfile" class="user-profile-widget">
+        <div class="user-avatar" id="userAvatar">CB</div>
+        <div class="user-meta">
+          <span class="user-name" id="userName">Đang tải...</span>
+          <span class="user-title" id="userTitle">Chuyên viên QTTD</span>
+        </div>
+        <button class="btn light small logout-btn" id="logoutBtn" title="Đăng xuất">Đăng xuất</button>
+      </div>
+      <button class="btn light small hidden" id="loginBtn">Đăng nhập</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- List View -->
+    <section id="listView" class="page">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Kho hồ sơ tín dụng local</p>
+          <h1>Hồ sơ quản trị tín dụng</h1>
+          <p>Tìm kiếm theo mã hồ sơ, CIF, khách hàng, số HĐTD hoặc người cập nhật.</p>
+        </div>
+        <button class="btn primary" data-new>+ Tạo hồ sơ mới</button>
+      </div>
+      <div class="searchbar">
+        <input id="searchInput" placeholder="Nhập mã hồ sơ, CIF, tên khách hàng, HĐTD, chi nhánh...">
+        <button class="btn" id="searchBtn">Tìm kiếm</button>
+        <button class="btn light small" id="clearSearchBtn" title="Xóa tìm kiếm">Xóa lọc</button>
+      </div>
+
+      <div class="list-meta-bar">
+        <div id="searchSummary" class="search-summary">Đang tải dữ liệu...</div>
+        <div class="page-size-selector">
+          <label for="pageSizeSelect">Hiển thị:</label>
+          <select id="pageSizeSelect">
+            <option value="10">10 / trang</option>
+            <option value="20" selected>20 / trang</option>
+            <option value="50">50 / trang</option>
+            <option value="100">100 / trang</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="recordList" class="record-list"></div>
+
+      <div id="pagination" class="pagination-bar"></div>
+    </section>
+
+    <!-- Editor View -->
+    <section id="editorView" class="page hidden">
+      <div class="editor-head">
+        <div>
+          <p class="eyebrow" id="editorEyebrow">Hồ sơ mới</p>
+          <h1 id="editorTitle">Nhập hồ sơ QTTD</h1>
+          <p id="editorMeta">Mọi thông tin đều do người dùng nhập thủ công.</p>
+        </div>
+        <div class="score-box">
+          <small>Mức rủi ro tổng thể</small>
+          <strong id="overallScore" class="score X">Xanh</strong>
+        </div>
+      </div>
+
+      <!-- User Attribution Banner -->
+      <div id="attributionBanner" class="attribution-banner hidden">
+        <div class="attr-item"><span class="attr-icon">👤</span> <span>Người tạo: <b id="attrCreatedBy">—</b></span></div>
+        <div class="attr-item"><span class="attr-icon">🕒</span> <span>Cập nhật lần cuối: <b id="attrUpdatedBy">—</b></span></div>
+        <span class="grow"></span>
+        <button type="button" class="btn light small" id="viewAuditBtn">📜 Xem lịch sử thay đổi</button>
+      </div>
+
+      <div class="workbar">
+        <label>Ngày đánh giá <input id="evaluationDate" type="date"></label>
+        <label>N1 cảnh báo <input id="n1" type="number" min="1" value="15"></label>
+        <label>N2 quá hạn <input id="n2" type="number" min="1" value="30"></label>
+        <span class="grow"></span>
+        <button class="btn" id="printBtn">In hồ sơ</button>
+        <button class="btn primary" id="saveBtn">Lưu hồ sơ</button>
+      </div>
+
+      <nav class="section-nav">
+        <a href="#customerSection">I. Khách hàng</a>
+        <a href="#creditSection">II. Cấp tín dụng</a>
+        <a href="#conditionSection">III. Điều kiện</a>
+        <a href="#debtSection">IV. Điều kiện nợ</a>
+        <a href="#auditSection">V. Nhật ký & Lịch sử</a>
+      </nav>
+
+      <form id="recordForm" novalidate>
+        <section id="customerSection" class="panel"></section>
+        <section id="creditSection" class="panel"></section>
+        <section id="conditionSection" class="panel"></section>
+        <section id="debtSection" class="panel"></section>
+      </form>
+
+      <section id="auditSection" class="panel hidden"></section>
+    </section>
+  </main>
+
+  <!-- Login Modal / Dialog -->
+  <div id="loginModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-brand"><span class="mark">QT</span> <b>Đăng nhập hệ thống QTTD</b></div>
+        <p class="modal-sub">Vui lòng đăng nhập tài khoản cán bộ để thực hiện thao tác nhập và quản lý hồ sơ tín dụng.</p>
+      </div>
+
+      <form id="loginForm" class="login-form">
+        <div class="modal-field">
+          <label>Tên đăng nhập</label>
+          <input id="loginUsername" type="text" placeholder="Nhập tên đăng nhập..." required autocomplete="username">
+        </div>
+        <div class="modal-field">
+          <label>Mật khẩu</label>
+          <input id="loginPassword" type="password" placeholder="Nhập mật khẩu..." required autocomplete="current-password">
+        </div>
+        <div id="loginError" class="login-error hidden"></div>
+        <button type="submit" class="btn primary modal-submit-btn" id="loginSubmitBtn">Đăng nhập</button>
+      </form>
+
+      <div class="quick-login-section">
+        <small>Tài khoản mẫu thử nghiệm (nhấp để chọn nhanh):</small>
+        <div class="quick-user-list">
+          <button type="button" class="quick-user-chip" data-user="canbo_qttd" data-pass="Canbo@123">
+            <b>Nguyễn Văn An</b><small>canbo_qttd (Chuyên viên QTTD)</small>
+          </button>
+          <button type="button" class="quick-user-chip" data-user="admin" data-pass="Admin@123">
+            <b>Quản trị viên</b><small>admin (Trưởng phòng QTTD)</small>
+          </button>
+          <button type="button" class="quick-user-chip" data-user="cb_kiemsoat" data-pass="Kiemsoat@123">
+            <b>Trần Thị Bình</b><small>cb_kiemsoat (Kiểm soát rủi ro)</small>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden" role="status"></div>
+  <script src="/app.js"></script>
+</body>
+</html>
